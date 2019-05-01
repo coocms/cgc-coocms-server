@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 		perror("connect");
 		return -1;
 	}
-//	while(1)
+	while(1)
 	{
 		char buf[100] = {"time"};
 		printf("input> ");fflush(stdout);
