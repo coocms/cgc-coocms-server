@@ -88,7 +88,7 @@ int main()
 	struct sockaddr_in hardwareAddr = {0};
 	
 	
-	int len = sizeof hardwareFd;
+	int len = 0;
 	
 	while(1)
 	{
