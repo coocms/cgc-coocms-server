@@ -88,7 +88,7 @@ int main()
 	struct sockaddr_in hardwareAddr = {0};
 	
 	
-	int len = sizeof clientaddr;
+	int len = sizeof hardwareFd;
 	
 	while(1)
 	{
