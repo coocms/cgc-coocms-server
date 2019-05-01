@@ -103,6 +103,8 @@ int main()
 				pthread_create(&t, NULL, hardware_client, (void*)hardwareFd);
 				break;
 			}
+			strcpy(buf, "硬件未连接\n");
+			write(hardwareFd, buf, 100);
 		
 	}
 
