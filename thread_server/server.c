@@ -21,7 +21,7 @@ void *serv_client(void *arg)
 			break;
 		printf("recv: %s\n", buf);
 
-		if(0 == strcmp("time", buf) )
+		if(0 == strcmp("client", buf) )
 		{
 			unsigned long t = time(NULL);
 			sprintf(buf, "%s", ctime(&t));
@@ -37,6 +37,8 @@ void *hardware_client(void *arg)
 {
 	int clientfd = (int)arg;
 	char buf[100] = {0};
+	write(clientfd, "hello hardware", 14);
+	
 	while(1)
 	{
 		int ret = read(clientfd, buf, 100);
@@ -44,7 +46,7 @@ void *hardware_client(void *arg)
 			break;
 		printf("recv: %s\n", buf);
 
-		if(0 == strcmp("time", buf) )
+		if(0 == strcmp("hard", buf) )
 		{
 			unsigned long t = time(NULL);
 			sprintf(buf, "%s", ctime(&t));
@@ -101,6 +103,7 @@ int main()
 			{
 				pthread_t t;
 				pthread_create(&t, NULL, hardware_client, (void*)hardwareFd);
+				printf("硬件已连接\n");
 				break;
 			}
 			strcpy(buf, "硬件未连接\n");
