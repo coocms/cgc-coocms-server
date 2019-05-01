@@ -12,10 +12,10 @@
 void *serv_client(void *arg)
 {
 	int clientfd = (int)arg;
-	
+	char buf[100] = {0};
 	while(1)
 	{
-		char buf[100] = {0};
+		
 		int ret = read(clientfd, buf, 100);
 		if(0 == ret)
 			break;
@@ -33,10 +33,37 @@ void *serv_client(void *arg)
 		write(clientfd, buf, 100);
 	}
 }
+void *hardware_client(void *arg)
+{
+	int clientfd = (int)arg;
+	char buf[100] = {0};
+	while(1)
+	{
+		int ret = read(clientfd, buf, 100);
+		if(0 == ret)
+			break;
+		printf("recv: %s\n", buf);
+
+		if(0 == strcmp("time", buf) )
+		{
+			unsigned long t = time(NULL);
+			sprintf(buf, "%s", ctime(&t));
+		}
+		else
+			strcpy(buf, "unknow.........");
+
+
+		write(clientfd, buf, 100);
+		
+	}
+	
+	
+}
 
 int main()
 {
 	int fd = socket(AF_INET, SOCK_STREAM, 0);//创建套接字
+	char buf[100] = {0};
 	if(-1 == fd)
 	{
 		perror("socket ");
@@ -57,16 +84,42 @@ int main()
 
 	printf("waiting for client....................\n");
 
-	struct sockaddr_in clientaddr = {0};
+	struct sockaddr_in QTaddr = {0};
+	struct sockaddr_in hardwareAddr = {0};
+	
+	
 	int len = sizeof clientaddr;
+	
+	while(1)
+	{
+			int hardwareFd = accept(fd, (struct sockaddr*)&hardwareAddr, &len);//等待底层连接
+			printf("client: %s\n", inet_ntoa(hardwareAddr.sin_addr));
+			int ret = read(hardwareFd, buf, 100);
+			printf("recv: %s\n", buf);
+			
+			if(strncmp("hardware", buf, 8) == 0)
+			{
+				pthread_t t;
+				pthread_create(&t, NULL, hardware_client, (void*)hardwareFd);
+				break;
+			}
+		
+	}
 
+
+	
+	
+	
+	
+	
+	
 	while(1)
 	{
 
-		int clientfd = accept(fd, (struct sockaddr*)&clientaddr, &len);//接电话并生成新的用于真正通信的套接字（clientfd）
+		int clientfd = accept(fd, (struct sockaddr*)&QTaddr, &len);//接电话并生成新的用于真正通信的套接字（clientfd）
 
 		//把客户端的IP转成人能识别的字符串样式,如: 0xff00ff00->"255.0.255.0"
-		printf("client: %s\n", inet_ntoa(clientaddr.sin_addr));
+		printf("client: %s\n", inet_ntoa(QTaddr.sin_addr));
 
 		pthread_t t;
 		pthread_create(&t, NULL, serv_client, (void*)clientfd);
