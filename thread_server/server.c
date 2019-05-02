@@ -41,6 +41,7 @@ void *hardware_client(void *arg)
 	
 	while(1)
 	{
+		memset(buf, 0, sizeof buf);
 		int ret = read(clientfd, buf, 100);
 		if(0 == ret)
 			break;
