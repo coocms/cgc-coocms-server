@@ -15,7 +15,7 @@ void *serv_client(void *arg)
 	char buf[100] = {0};
 	while(1)
 	{
-		
+		memset(buf, 0, sizeof buf);
 		int ret = read(clientfd, buf, 100);
 		if(0 == ret)
 			break;
@@ -97,6 +97,7 @@ int main()
 	{
 			int hardwareFd = accept(fd, (struct sockaddr*)&hardwareAddr, &len);//等待底层连接
 			printf("client: %s\n", inet_ntoa(hardwareAddr.sin_addr));
+			memset(buf, 0, sizeof(buf));
 			int ret = read(hardwareFd, buf, 100);
 			printf("recv: %s\n", buf);
 			
